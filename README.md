@@ -1,4 +1,4 @@
 leodown
 =======
 
-A script checks newly uploaded objects from site LeopardRaw.
+A script that checks newly uploaded objects from site LeopardRaw.
