@@ -10,7 +10,11 @@ txtpur='\e[0;35m' # Purple
 leolist=~/leodown.list
 leourl="http://leopard-raws.org/index.php?search="
 leotmp="/tmp/leotmp.lst"
-added=''
+
+torrent_adder='transmission-remote -a' # command for adding torrents.
+torrent_daemon='transmission-daemon' # torrent client daemon.
+name_added=''
+torrent_list=()
 date_base_new=''
 
 date_compare(){
@@ -56,8 +60,8 @@ check(){	# title date_base
 				;&
 			*RAW*)
 				if date_compare "$date_upped"  "$date_base"; then
-					echo "$torrent"
-					added+="$name\n"
+					name_added+="$name\n"
+					torrent_list+=( "$torrent" )
 					if date_compare "$date_upped" "$date_base_new"; then
 						date_base_new="$date_upped"
 					fi
@@ -70,18 +74,26 @@ check(){	# title date_base
 	rm -f $leotmp
 }
 
+manpg(){
+	echo -e "usage: leodown.sh [ keywords | -h ]\n"
+	echo -e "Without params, script will auto check & add new released anime."
+	echo -e "-h --help\t\tShow this help."
+	echo -e "keywords\t\tSearch & add to watch list.\n"
+	echo -e "To check or modify your list, edit $HOME/leodown.list."
+	echo -e "Ended animes will be prefixed with '#', which will be ignored when update."
+}
+
 	# test libxml2.
 [[ ! $(type -t xmllint) ]] && ( echo "Please install libxml2 first." >&2; exit 0 )
+	# test torrent-adder & torrent_daemon.
+[[ ! $(type -t $torrent_daemon) ]] && ( echo "Please define your torrent-daemon. " >&2; exit 0 )
+[[ ! $(type -t $torrent_adder) ]] && ( echo "Please define your torrent-adder. " >&2; exit 0 )
+pgrep $torrent_daemon &>/dev/null || ( echo "launch $torrent_daemon."; $torrent_daemon & )
 
 if [ "$#" != '0' ]; then
 	case "$1" in
 		-h|--help)
-			echo -e "usage: leodown.sh [ keywords | -h ]\n"
-			echo -e "Without params, script will auto check & add new released anime."
-			echo -e "-h --help\t\tShow this help."
-			echo -e "keywords\t\tSearch & add to watch list.\n"
-			echo -e "To check or modify your list, edit $HOME/leodown.list."
-			echo -e "Ended animes will be prefixed with '#', which will be ignored when update."
+			manpg
 			exit 0
 			;;
 		*)
@@ -108,6 +120,11 @@ while read title date time; do
 
 done < $leolist
 
-notify-send 'leopard-update' "$added" -u critical -a "leodown"
-echo -e "torrents added:$txtpur\n$added$txtrst" >&2
+	# add torrents.
+for (( i=0;i<${#torrent_list};i++ )); do
+	$torrent_adder ${torrent_list[i]} &>/dev/null
+done
+
+notify-send 'leopard-update' "$name_added" -u critical -a "leodown"
+echo -e "$name_added"
 
