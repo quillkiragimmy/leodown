@@ -88,7 +88,7 @@ manpg(){
 	# test torrent-adder & torrent_daemon.
 [[ ! $(type -t $torrent_daemon) ]] && ( echo "Please define your torrent-daemon. " >&2; exit 0 )
 [[ ! $(type -t $torrent_adder) ]] && ( echo "Please define your torrent-adder. " >&2; exit 0 )
-pgrep $torrent_daemon &>/dev/null || ( echo "launch $torrent_daemon."; $torrent_daemon & )
+pgrep -f $torrent_daemon &>/dev/null || ( echo "launch $torrent_daemon."; $torrent_daemon &>/dev/null & )
 
 if [ "$#" != '0' ]; then
 	case "$1" in
@@ -122,7 +122,7 @@ done < $leolist
 
 	# add torrents.
 for (( i=0;i<${#torrent_list};i++ )); do
-	$torrent_adder ${torrent_list[i]} &>/dev/null
+	$torrent_adder ${torrent_list[i]} &>/dev/null &
 done
 
 notify-send 'leopard-update' "$name_added" -u critical -a "leodown"
