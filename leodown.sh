@@ -47,7 +47,8 @@ check(){	# title date_base
 		| egrep 'Date|hash'\
 		| sed 's|.*href=".\(.*\)".*] \(.*\) (.*$|http://leopard-raws.org\1\t\2|g'\
 		| sed 's/.*Date: \(.*\) | Comment.*$/\t\1#/g'\
-		| tr -d '\n' | tr '#' '\n' > $leotmp
+		| tr -d '\n' | tr '#' '\n'\
+		| grep -i "$(echo $1| tr '.' ' ')" > $leotmp	# bugfix, for season 2 ended by season 1.
 
 	while read line; do
 		date_upped="$(echo "$line"| cut -f3)"
