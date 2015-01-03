@@ -27,7 +27,8 @@ search(){
 	curl -s "$leourl"$(echo $keywords| tr ' ' '+')\
 		| xmllint --html --xpath '//*[@id="torrents"]' - 2>/dev/null\
 		| fgrep  'hash'\
-		| sed 's|.*href=".\(.*\)".*] \(.*\)</a.*$|\2 :\t http://leopard-raws.org\1|g'
+		| sed 's|.*href=".\(.*\)".*] \(.*\)</a.*$|\2 :\t http://leopard-raws.org\1|g'\
+		| grep -i "$keywords"
 
 	echo 'Add Torrents? (Y/n)'
 	read yn
