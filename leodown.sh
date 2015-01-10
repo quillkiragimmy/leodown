@@ -34,6 +34,8 @@ search(){
 	read yn
 	if [ "$yn" != 'n' ]; then
 		echo -e "$(echo $keywords| tr ' ' '.')\t1970-01-01 00:00:00" >> $leolist
+	else
+		exit 0
 	fi
 
 }
@@ -77,9 +79,10 @@ check(){	# title date_base
 }
 
 manpg(){
-	echo -e "usage: leodown.sh [ keywords | -h ]\n"
+	echo -e "usage: leodown.sh [ keywords | -h, --help | -l, --list ]\n"
 	echo -e "Without params, script will auto check & add new released anime."
 	echo -e "-h --help\t\tShow this help."
+	echo -e "-l --list\t\tList ongoning shows."
 	echo -e "keywords\t\tSearch & add to watch list.\n"
 	echo -e "To check or modify your list, edit $HOME/leodown.list."
 	echo -e "Ended animes will be prefixed with '#', which will be ignored when update."
@@ -92,17 +95,38 @@ manpg(){
 [[ ! $(type -t $torrent_adder) ]] && ( echo "Please define your torrent-adder. " >&2; exit 0 )
 pgrep -f $torrent_daemon &>/dev/null || ( echo "launch $torrent_daemon."; $torrent_daemon &>/dev/null & )
 
-if [ "$#" != '0' ]; then
+list(){	# list ongoning shows.
+	echo -e $(\
+		curl -sL $leourl\
+		| xmllint --html --htmlout --xpath '//div[@class="ongoings-content"]' t 2>/dev/null\
+		| tr -d '\r'\
+		| tr -d '\n'\
+		| sed 's|^\s*||g'\
+		| sed "s|<div class=\"name\">|\\\n\\$txtrst|g"\
+		| sed "s|<div class=\"jpname\">|\\\t\\$txtpur|g"\
+		| perl -pe 's/<.*?>//g'\
+		| sed 's/\s\{2,\}//g'\
+		)
+	echo -e $txtrst
+
+}
+
+while [ "$#" != '0' ]; do
 	case "$1" in
-		-h|--help)
+		-h| --help)
 			manpg
+			exit 0
+			;;
+		-l| --list)
+			list
 			exit 0
 			;;
 		*)
 			search "$@"
 			;;
 	esac
-fi
+	shift
+done
 
 num=$(cat $leolist| grep -v '#'| wc -l)
 notify-send "Update List:" "$(cat $leolist| grep -v '#'| cut -f1)" -a "leodown"
