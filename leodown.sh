@@ -98,7 +98,7 @@ pgrep -f $torrent_daemon &>/dev/null || ( echo "launch $torrent_daemon."; $torre
 list(){	# list ongoning shows.
 	echo -e $(\
 		curl -sL $leourl\
-		| xmllint --html --htmlout --xpath '//div[@class="ongoings-content"]' t 2>/dev/null\
+		| xmllint --html --htmlout --xpath '//div[@class="ongoings-content"]' - 2>/dev/null\
 		| tr -d '\r'\
 		| tr -d '\n'\
 		| sed 's|^\s*||g'\
