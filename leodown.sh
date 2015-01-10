@@ -123,6 +123,7 @@ while [ "$#" != '0' ]; do
 			;;
 		*)
 			search "$@"
+			break
 			;;
 	esac
 	shift
