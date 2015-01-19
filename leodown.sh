@@ -33,7 +33,7 @@ search(){
 	echo 'Add Torrents? (Y/n)'
 	read yn
 	if [ "$yn" != 'n' ]; then
-		echo -e "$(echo $keywords| tr ' ' '.')\t1970-01-01 00:00:00" >> $leolist
+		echo -e "$(echo $keywords| tr ' ' '_')\t1970-01-01 00:00:00" >> $leolist
 	else
 		exit 0
 	fi
@@ -45,13 +45,13 @@ check(){	# title date_base
 	date_base="$2"
 
 	# get <torrent \t name \t date_time> list.
-	curl -s "$leourl"$(echo $1| tr '.' '+') 2>/dev/null\
+	curl -s "$leourl"$(echo "$1"| tr '.' '+') 2>/dev/null\
 		| xmllint --html --xpath '//*[@id="torrents"]' - 2>/dev/null\
 		| egrep 'Date|hash'\
 		| sed 's|.*href=".\(.*\)".*] \(.*\) (.*$|http://leopard-raws.org\1\t\2|g'\
 		| sed 's/.*Date: \(.*\) | Comment.*$/\t\1#/g'\
 		| tr -d '\n' | tr '#' '\n'\
-		| grep -i "$(echo $1| tr '.' ' ')" > $leotmp	# bugfix, for season 2 ended by season 1.
+		| grep -i "$(echo "$1"| tr '_' ' ')" > $leotmp	# bugfix, for season 2 ended by season 1.
 
 	while read line; do
 		date_upped="$(echo "$line"| cut -f3)"
