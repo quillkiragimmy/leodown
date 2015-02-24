@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+torrent_daemon="transmission-daemon"
+
+scriptDir=$(dirname "$(realpath $0)")
 notifier () {
 	while read line; do
 		echo -e "$line"
@@ -16,4 +19,5 @@ notifier () {
 }
 
 pgrep -f $torrent_daemon &>/dev/null || $torrent_daemon &>/dev/null &
-./leodown.pl $@| notifier
+$scriptDir/leodown.pl $@| notifier
+
