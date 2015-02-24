@@ -10,6 +10,7 @@ A lazy-man script for checking bunch of Leopard-Raws objects for update.
 
 ## Cross Platform
 I recently separated the original shell script into two: leodown.sh and leodown.pl.
+
 1. For linux, leodown.sh uses Libnotify to send notifications output by leodown.pl.
 2. On all platforms, leodown.pl will do text outputs to STDOUT and STDERR using UTF8:
 	1. STDOUT: prefixed with MSG or ADD for notification.
