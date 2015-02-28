@@ -36,7 +36,7 @@ GetOptions(
 if ( $help ) {
 	pod2usage ( -verbose => 2 );
 }
-elsif ( $list ) {
+elsif ( $list ) {#list ongonings.
 	my $tree = HTML::TreeBuilder->new_from_content( get $leourl );
 	my @shows = $tree->findnodes_as_strings ( '//div[@class="ongoings-content"]/div' );
 	my $show_num = pop @shows;
@@ -82,14 +82,14 @@ else {
 	for my $i ( 0 .. $#sifted_list ) {
 		my ( $title, $last_date ) = split("\t", $sifted_list[$i]);
 		my $new_date = check($title, $last_date);
-		print "MSG|($i/$#sifted_list) $title\n";
+		print "MSG|(", $i+1, "/", $#sifted_list+1, ") $title\n";
 		print $f_leolist_tmp "$title\t$new_date\n";
 	}
 	close $f_leolist_tmp;
 	move $leolist_tmp, $leolist;
 }
 
-sub check {
+sub check {# check update.
 	my ( $title, $last_date ) = @_;
 	my $key = $title =~ s/_/+/gr;
 	my $key_spaced = $title =~ s/_/ /gr;
