@@ -9,9 +9,9 @@ A lazy-man script for checking bunch of Leopard-Raws objects for update.
 4. Type leodown.pl -h to view the document.
 
 ## Usage example
-~$ leodown.sh -l
-~$ leodown.sh Durarara!!x2 Shou
-~$ leodown.sh
+	~$ leodown.sh -l
+	~$ leodown.sh Durarara!!x2 Shou
+	~$ leodown.sh
 
 ## Cross Platform
 I recently separated the original shell script into two: leodown.sh and leodown.pl.
