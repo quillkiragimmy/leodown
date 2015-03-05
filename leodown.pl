@@ -21,6 +21,7 @@ binmode STDERR, ':utf8';
 
 $| = 1;
 my $leourl = 'http://leopard-raws.org/index.php?search=';
+if ( ! get $leourl ) { print "MSG|","Leopard-raws is down!\n"; exit 1; }
 my $leolist = File::HomeDir->my_documents . "/leodown.list";
 my $leolist_tmp = File::HomeDir->my_documents . "/.leodown.list";
 
