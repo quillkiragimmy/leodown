@@ -16,6 +16,7 @@ use Date::Parse;
 use HTML::TreeBuilder::XPath;
 use File::HomeDir;
 use File::Copy 'move';
+use utf8;
 binmode STDOUT, ':utf8';
 binmode STDERR, ':utf8';
 
@@ -93,7 +94,7 @@ else {
 sub check {# check update.
 	my ( $title, $last_date ) = @_;
 	my $key = $title =~ s/_/+/gr;
-	my $key_spaced = $title =~ s/_/ /gr;
+	my $key_spaced = lc $title =~ s/_/ /gr; # lowering the case for exact match.
 	my $tree = HTML::TreeBuilder->new_from_content( get "$leourl$key" );
 	my @titles = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
 	my @links = $tree->findnodes( '//div[@class="torrent_name"]/a[@href]' );
@@ -101,7 +102,7 @@ sub check {# check update.
 	my $new_date = $last_date;
 
 	for my $i ( 0 .. $#titles ) {
-		if ( ($titles[$i]=~/$key_spaced/i) and ($titles[$i]=~/-\s[0-9]{2}\s(RAW|END)/) ) {
+		if ( (index ( lc ($titles[$i]), $key_spaced) != -1 ) and ($titles[$i]=~/-\s[0-9]{2}\s(RAW|END)/) ) {
 			my $date = $infos[$i] =~ s/^.*Date:\s(.*?)\|.*$/$1/r;
 			if ( datecomp($date, $last_date) > 0 ) {
 				my $magnet = ($leourl=~s/index.*$//r) . ($links[$i]->attr('href')=~s/\.\///r);
