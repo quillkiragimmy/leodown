@@ -85,7 +85,7 @@ else {
 		my ( $title, $last_date ) = split("\t", $sifted_list[$i]);
 		my $new_date = check($title, $last_date);
 		print "MSG|(", $i+1, "/", $#sifted_list+1, ") $title\n";
-		print $f_leolist_tmp "$title\t$new_date\n";
+		print $f_leolist_tmp $new_date? "$title\t$new_date\n" : "#$title\t$last_date\n";
 	}
 	close $f_leolist_tmp;
 	move $leolist_tmp, $leolist;
@@ -99,20 +99,22 @@ sub check {# check update.
 	my @titles = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
 	my @links = $tree->findnodes( '//div[@class="torrent_name"]/a[@href]' );
 	my @infos = $tree->findnodes_as_strings ( '//div[@class="info"]' );
-	my $new_date = $last_date;
+	my @dates = map { s/^.*Date:\s(.*?)\|.*$/$1/r } @infos;
+
+	my $index_newest = -1;
+	$dates[$index_newest] = $last_date;
 
 	for my $i ( 0 .. $#titles ) {
 		if ( (index ( lc ($titles[$i]), $key_spaced) != -1 ) and ($titles[$i]=~/-\s[0-9]{2}\s(RAW|END)/) ) {
-			my $date = $infos[$i] =~ s/^.*Date:\s(.*?)\|.*$/$1/r;
-			if ( datecomp($date, $last_date) > 0 ) {
+			if ( datecomp($dates[$i], $last_date) > 0 ) {
 				my $magnet = ($leourl=~s/index.*$//r) . ($links[$i]->attr('href')=~s/\.\///r);
 				print "ADD|$titles[$i]|$magnet\n";
-				if ( datecomp($date, $new_date) > 0 ) { $new_date = $date; }
+				if ( datecomp($dates[$i], $dates[$index_newest]) > 0 ) { $index_newest = $i; }
 			}
 		}
 	}
 	$tree->delete();
-	return $new_date;
+	return ( $titles[$index_newest] =~ /-\s[0-9]{2}\sEND/ )? undef : $dates[$index_newest];
 }
 
 __END__
