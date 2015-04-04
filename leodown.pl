@@ -22,7 +22,6 @@ binmode STDERR, ':utf8';
 
 $| = 1;
 my $leourl = 'http://leopard-raws.org/index.php?search=';
-if ( ! get $leourl ) { print "MSG|","Leopard-raws is down!\n"; exit 1; }
 my $leolist = File::HomeDir->my_documents . "/leodown.list";
 my $leolist_tmp = File::HomeDir->my_documents . "/.leodown.list";
 
@@ -39,7 +38,10 @@ if ( $help ) {
 	pod2usage ( -verbose => 2 );
 }
 elsif ( $list ) {#list ongonings.
-	my $tree = HTML::TreeBuilder->new_from_content( get $leourl );
+	my $site_source = get $leourl;
+	if ( ! $site_source ) { print "MSG|","Error when fetching list!\n"; exit 1; }
+
+	my $tree = HTML::TreeBuilder->new_from_content( $site_source );
 	my @shows = $tree->findnodes_as_strings ( '//div[@class="ongoings-content"]/div' );
 	my $show_num = pop @shows;
 	print STDERR "Number of Ongoing Shows: $show_num\n";
@@ -55,7 +57,8 @@ elsif ( scalar(@ARGV) != 0 ) {# searching.
 	my @shows = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
 	print STDERR join("\n", grep { /$key_spaced/i } @shows);
 	print STDERR colored ['green'], "\nAdd torrent? (N/y)";
-	if ( <STDIN> eq 'y' ) {
+	my $name = <STDIN>; chomp $name;
+	if ( $name eq 'y' ) {
 		open my $f_leolist, ">>", $leolist;
 		print $f_leolist join('_', @ARGV), "\t1970/01/01 00:00:00\n";
 		close $f_leolist;
@@ -95,7 +98,11 @@ sub check {# check update.
 	my ( $title, $last_date ) = @_;
 	my $key = $title =~ s/_/+/gr;
 	my $key_spaced = lc $title =~ s/_/ /gr; # lowering the case for exact match.
-	my $tree = HTML::TreeBuilder->new_from_content( get "$leourl$key" );
+
+	my $site_source = get "$leourl$key";
+	if ( ! $site_source ) { print "MSG|","Error when fetching page!\n"; next; }
+
+	my $tree = HTML::TreeBuilder->new_from_content( $site_source );
 	my @titles = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
 	my @links = $tree->findnodes( '//div[@class="torrent_name"]/a[@href]' );
 	my @infos = $tree->findnodes_as_strings ( '//div[@class="info"]' );
