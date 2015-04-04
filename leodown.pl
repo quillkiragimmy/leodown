@@ -60,9 +60,9 @@ elsif ( scalar(@ARGV) != 0 ) {# searching.
 	my $name = <STDIN>; chomp $name;
 	if ( $name eq 'y' ) {
 		open my $f_leolist, ">>", $leolist;
-		print $f_leolist join('_', @ARGV), "\t1970/01/01 00:00:00\n";
+		print $f_leolist join('_', @ARGV), "\t1970/01/02 00:00:00\n";
 		close $f_leolist;
-		check ( join('_', @ARGV), '1970/01/01 00:00:00' );
+		check ( join('_', @ARGV), '1970/01/02 00:00:00' );
 	}
 	$tree->delete();
 }
@@ -108,14 +108,16 @@ sub check {# check update.
 	my @infos = $tree->findnodes_as_strings ( '//div[@class="info"]' );
 	my @dates = map { s/^.*Date:\s(.*?)\|.*$/$1/r } @infos;
 
-	my $index_newest = -1;
-	$dates[$index_newest] = $last_date;
+	my $index_newest = $#titles+1;
+	push @dates, $last_date;
 
 	for my $i ( 0 .. $#titles ) {
 		if ( (index ( lc ($titles[$i]), $key_spaced) != -1 ) and ($titles[$i]=~/-\s[0-9]{2}\s(RAW|END)/) ) {
+			print "comp date & last_date\n";
 			if ( datecomp($dates[$i], $last_date) > 0 ) {
 				my $magnet = ($leourl=~s/index.*$//r) . ($links[$i]->attr('href')=~s/\.\///r);
 				print "ADD|$titles[$i]|$magnet\n";
+				print "comp date & newest_date\n";
 				if ( datecomp($dates[$i], $dates[$index_newest]) > 0 ) { $index_newest = $i; }
 			}
 		}
