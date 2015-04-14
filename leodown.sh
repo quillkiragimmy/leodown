@@ -3,7 +3,6 @@
 torrent_daemon="transmission-daemon"
 
 scriptDir=$(dirname "$(realpath $0)")
-echo $scriptDir
 notifier () {
 	while read line; do
 		echo -e "$line"
