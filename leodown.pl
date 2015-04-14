@@ -53,9 +53,10 @@ elsif ( $list ) {#list ongonings.
 }
 elsif ( scalar(@ARGV) != 0 ) {# searching.
 	my ( $key, $key_spaced ) = ( join('+', @ARGV), join(' ',@ARGV) );
+	$key =~ s/\s/%20/g;
 	my $tree = HTML::TreeBuilder->new_from_content( get "$leourl$key" );
 	my @shows = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
-	print STDERR join("\n", grep { /$key_spaced/i } @shows);
+	print STDERR join("\n", grep { index ( lc $_, lc $key_spaced ) != -1 } @shows);
 	print STDERR colored ['green'], "\nAdd torrent? (N/y)";
 	my $name = <STDIN>; chomp $name;
 	if ( $name eq 'y' ) {
