@@ -101,7 +101,7 @@ sub check {# check update.
 	my $key_spaced = lc $title =~ s/_/ /gr; # lowering the case for exact match.
 
 	my $site_source = get "$leourl$key";
-	if ( ! $site_source ) { print "MSG|","Error when fetching page!\n"; next; }
+	if ( ! $site_source ) { print "MSG|","Error when fetching page!\n"; return $last_date; }
 
 	my $tree = HTML::TreeBuilder->new_from_content( $site_source );
 	my @titles = $tree->findnodes_as_strings ( '//div[@class="torrent_name"]' );
@@ -114,7 +114,6 @@ sub check {# check update.
 
 	for my $i ( 0 .. $#titles ) {
 		if ( (index ( lc ($titles[$i]), $key_spaced) != -1 ) and ($titles[$i]=~/-\s[0-9]{2}\s(RAW|END)/) ) {
-			print "comp date & last_date\n";
 			if ( datecomp($dates[$i], $last_date) > 0 ) {
 				my $magnet = ($leourl=~s/index.*$//r) . ($links[$i]->attr('href')=~s/\.\///r);
 				print "ADD|$titles[$i]|$magnet\n";
