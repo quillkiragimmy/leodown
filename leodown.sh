@@ -18,6 +18,6 @@ notifier () {
 	done
 }
 
-pgrep -f $torrent_daemon &>/dev/null || $torrent_daemon &>/dev/null &
+pgrep -f $torrent_daemon &>/dev/null || $torrent_daemon -e /dev/null &
 $scriptDir/leodown.pl $@| notifier
 
