@@ -15,7 +15,7 @@ main(){
 	elif [ "$1" == '' ]; then
 
 		while read list; do
-			if [ $(echo $list|fgrep '#') ]; then continue; fi
+			if echo $list|fgrep '#'; then continue; fi
 			title=$(echo $list|cut -f1)
 			preDate=$(echo $list|cut -f2)
 			echo "updating $title..."
@@ -51,7 +51,7 @@ update(){ #params: title, date
 		# download if date > preDate.
 		if [ $(date -d"$(sed -n "$i"p /tmp/.leotime)" +%s) -gt $(date -d"$preDate" +%s) ]; then
 			transmission-remote -a "http://leopard-raws.org$(sed -n "$i"p /tmp/.leourl)"
-			echo "add http://leopard-raws.org$(sed -n "$i"p /tmp/.leourl)"
+			echo "add $(sed -n "$i"p /tmp/.leoname)"
 			# find the largest date.
 			if [ $(date -d"$(sed -n "$i"p /tmp/.leotime)" +%s) -gt $(date -d"$newDate" +%s) ]; then
 				newDate=$(sed -n "$i"p /tmp/.leotime)
