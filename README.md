@@ -1,6 +1,6 @@
 leodown
 =======
-A lazy-man script for checking bunch of Leopard-Raws objects for update.
+A lazy-man bash script for checking bunch of Leopard-Raws objects for update.
 
 ## Capability
 1. List ongoing shows.
@@ -9,14 +9,8 @@ A lazy-man script for checking bunch of Leopard-Raws objects for update.
 4. Type leodown.pl -h to view the document.
 
 ## Usage example
-	~$ leodown.sh -l
-	~$ leodown.sh Durarara!!x2 Shou
-	~$ leodown.sh
+	~$ nleodown.sh list
+	~$ nleodown.sh Durarara!!x2 Shou
+	~$ nleodown.sh
 
-## Cross Platform
-I recently separated the original shell script into two: leodown.sh and leodown.pl.
 
-1. For linux, leodown.sh uses Libnotify to send notifications output by leodown.pl.
-2. On all platforms, leodown.pl will do text outputs to STDOUT and STDERR using UTF8:
-	1. STDOUT: prefixed with MSG or ADD for notification.
-	2. STDERR: debug messages & list outputs.
