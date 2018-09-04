@@ -47,7 +47,7 @@ update(){ #params: title, date
 	n=$(wc -l /tmp/.leotime|cut -d' ' -f1)
 
 	newDate="1970/01/02"
-	for((i=1;i<=$n;i++)); do
+	for((i=n;i>0;i--)) do
 		# download if date > preDate.
 		if [ $(date -d"$(sed -n "$i"p /tmp/.leotime)" +%s) -gt $(date -d"$preDate" +%s) ]; then
 			transmission-remote -a "http://leopard-raws.org$(sed -n "$i"p /tmp/.leourl)"
