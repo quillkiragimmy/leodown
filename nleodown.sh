@@ -18,7 +18,7 @@ main(){
 			if echo $list|fgrep '#'; then continue; fi
 			title=$(echo $list|cut -f1)
 			preDate=$(echo $list|cut -f2)
-			echo "updating $title..."
+			echo -e "\tupdating $title..."
 			update $title $preDate
 		done < $leolist
 
