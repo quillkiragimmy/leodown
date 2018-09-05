@@ -51,7 +51,7 @@ update(){ #params: title, date
 		# download if date > preDate.
 		if [ $(date -d"$(sed -n "$i"p /tmp/.leotime)" +%s) -gt $(date -d"$preDate" +%s) ]; then
 			transmission-remote -a "http://leopard-raws.org$(sed -n "$i"p /tmp/.leourl)"
-			echo "add $(sed -n "$i"p /tmp/.leoname)"
+			echo -e "\tadd $(sed -n "$i"p /tmp/.leoname)"
 			# find the largest date.
 			if [ $(date -d"$(sed -n "$i"p /tmp/.leotime)" +%s) -gt $(date -d"$newDate" +%s) ]; then
 				newDate=$(sed -n "$i"p /tmp/.leotime)
